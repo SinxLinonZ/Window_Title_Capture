@@ -30,7 +30,6 @@
         {
             this.components = new System.ComponentModel.Container();
             this.label_Display = new System.Windows.Forms.Label();
-            this.backgroundWorker_Rolling = new System.ComponentModel.BackgroundWorker();
             this.timer_Rolling = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
@@ -48,11 +47,10 @@
             this.label_Display.MouseMove += new System.Windows.Forms.MouseEventHandler(this.label_Display_MouseMove);
             this.label_Display.MouseUp += new System.Windows.Forms.MouseEventHandler(this.Form_Display_MouseUp);
             // 
-            // backgroundWorker_Rolling
+            // timer_Rolling
             // 
-            this.backgroundWorker_Rolling.WorkerSupportsCancellation = true;
-            this.backgroundWorker_Rolling.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_Rolling_DoWork);
-            this.backgroundWorker_Rolling.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_Rolling_RunWorkerCompleted);
+            this.timer_Rolling.Interval = 10;
+            this.timer_Rolling.Tick += new System.EventHandler(this.timer_Rolling_Tick);
             // 
             // Form_Display
             // 
@@ -77,7 +75,6 @@
         #endregion
 
         private System.Windows.Forms.Label label_Display;
-        private System.ComponentModel.BackgroundWorker backgroundWorker_Rolling;
         private System.Windows.Forms.Timer timer_Rolling;
     }
 }

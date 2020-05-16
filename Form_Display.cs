@@ -27,17 +27,17 @@ namespace Live_Netease_Music_Title
         private bool mouseDown;
         private Point lastLocation;
 
-        private bool updated = false;
-        private bool restart = false;
-
         private bool topMost = false;
         private bool penetrate = false;
+
+        private int offset = 0;
+        private int timerTime = 0;
 
         public Form_Display()
         {
             InitializeComponent();
             G_formDisplay = this;
-            //C_updateSettings();
+            C_updateSettings();
         }
 
         private void Form_Display_Load(object sender, EventArgs e)
@@ -53,7 +53,7 @@ namespace Live_Netease_Music_Title
 
         public void C_updateSettings()
         {
-            backgroundWorker_Rolling.CancelAsync();
+            offset = label_Display.Size.Width - G_formDisplay.Size.Width;
 
             label_Display.Font = Form_Main_Window.G_displayFont;
             label_Display.ForeColor = Form_Main_Window.G_displayColor;
@@ -64,7 +64,10 @@ namespace Live_Netease_Music_Title
             customBackground = Form_Main_Window.G_customBackground;
 
             topMost = Form_Main_Window.G_topMost;
-        //    penetrate = Form_Main_Window.G_Penetrate;
+
+            label_Display.Location = new Point(0, 0);
+
+            //    penetrate = Form_Main_Window.G_Penetrate;
 
             if (G_formDisplay.TopMost != topMost)
             {
@@ -92,120 +95,59 @@ namespace Live_Netease_Music_Title
 
             if (!displayRolling)
             {
-                G_formDisplay.Size = new Size(label_Display.Size.Width-1, label_Display.Size.Height) ;
-                label_Display.Location = new Point(0, 0);
-                backgroundWorker_Rolling.CancelAsync();
+                //G_formDisplay.Size = new Size(label_Display.Size.Width-1, label_Display.Size.Height) ;
+                G_formDisplay.Size = new Size(label_Display.Size.Width, label_Display.Size.Height) ;
             }
             else
             {
 
+                //G_formDisplay.Size = new Size(Form_Main_Window.G_displayRollingSize - 1, label_Display.Size.Height);
                 G_formDisplay.Size = new Size(Form_Main_Window.G_displayRollingSize - 1, label_Display.Size.Height);
 
                 if (label_Display.Size.Width > G_formDisplay.Size.Width)
                 {
-                    if (!backgroundWorker_Rolling.IsBusy)
-                    {
-                        updated = false;
-                        backgroundWorker_Rolling.RunWorkerAsync();
-                    }
-                    else
-                    {
-                        backgroundWorker_Rolling.CancelAsync();
-                        updated = false;
-                        restart = true;
-                    }
-
-                } else
+                    timerTime = 0;
+                    timer_Rolling.Start();
+                } 
+                else
                 {
-                    updated = true;
-                    backgroundWorker_Rolling.CancelAsync();
-                    label_Display.Location = new Point(0, 0);
+                    timerTime = 0;
                 }
 
             }
-
         }
 
-        private void backgroundWorker_Rolling_DoWork(object sender, DoWorkEventArgs e)
+
+        private void timer_Rolling_Tick(object sender, EventArgs e)
         {
-            while (true)
+            offset = label_Display.Size.Width - G_formDisplay.Size.Width;
+            if (offset <= 0)
             {
-                if (backgroundWorker_Rolling.CancellationPending)
+                return;
+            }
+            if (timerTime > 2 * 100 && timerTime <= 2 * 100 + offset)
+            {
+                if (Math.Abs(label_Display.Left) < offset)
                 {
-                    return;
+                    //label_Display.Location = new Point(label_Display.Left--, 0);
+                    label_Display.Location = new Point(label_Display.Location.X - 1, 0);
+                    //label_Display.Left -= 1;
                 }
-                C_rolling();
-
             }
-        }
-
-        private void backgroundWorker_Rolling_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
-        {
-            if (restart)
+            if (timerTime > 2 * 100 + offset + 2 * 100)
             {
-                backgroundWorker_Rolling.RunWorkerAsync();
-                restart = false;
-            }
-
-        }
-
-        private bool C_rolling()
-        {
-            var offset = label_Display.Size.Width - G_formDisplay.Size.Width;
-            uint maxi = Convert.ToUInt32(offset) * 2000000;
-            double float_offset;
-            float_offset = Convert.ToDouble(offset) / Convert.ToDouble(maxi / 10 * 7);
-
-            for (uint i = 0; i < maxi; i++)
-            {
-                if (updated || backgroundWorker_Rolling.CancellationPending)
+                if (Math.Abs(label_Display.Left) > 0)
                 {
-                    updated = false;
-                    label_Display.Location = new Point(0, 0);
-                    return false;
+                    //label_Display.Location = new Point(label_Display.Left++, 0);
+                    label_Display.Location = new Point(label_Display.Location.X + 1, 0);
+                    //label_Display.Left -= 1;
                 }
                 else
                 {
-                    if (i> maxi/10*3)
-                    {
-                        double temp_locationX = (i - maxi / 10 * 3) * float_offset;
-                        uint last_floor = Convert.ToUInt32(Math.Floor(((i - 1) - maxi / 10 * 3) * float_offset));
-                        uint curr_floor = Convert.ToUInt32(Math.Floor(temp_locationX));
-                        if (curr_floor != last_floor)
-                        {
-                            label_Display.Location = new Point(0- (int)curr_floor, 0);
-                        }
-
-                    }
+                    timerTime = 0;
                 }
             }
-
-            for (uint i = 0; i < maxi; i++)
-            {
-                if (updated || backgroundWorker_Rolling.CancellationPending)
-                {
-                    updated = false;
-                    label_Display.Location = new Point(0, 0);
-                    return false;
-                }
-                else
-                {
-                    if (i > maxi / 10 * 3)
-                    {
-                        double temp_locationX = (i - maxi / 10 * 3) * float_offset;
-                        uint last_floor = Convert.ToUInt32(Math.Floor(((i - 1) - maxi / 10 * 3) * float_offset));
-                        uint curr_floor = Convert.ToUInt32(Math.Floor(temp_locationX));
-                        if (curr_floor != last_floor)
-                        {
-                            label_Display.Location = new Point(0 - offset + (int)curr_floor, 0);
-                        }
-
-                    }
-                }
-            }
-
-            return true;
-
+            timerTime++;
         }
 
 
@@ -243,6 +185,7 @@ namespace Live_Netease_Music_Title
             }
 
         }
+
 
 
 
