@@ -37,6 +37,7 @@ namespace Live_Netease_Music_Title
         {
             InitializeComponent();
             G_formDisplay = this;
+            //C_updateSettings();
         }
 
         private void Form_Display_Load(object sender, EventArgs e)
@@ -81,8 +82,11 @@ namespace Live_Netease_Music_Title
             }
             else
             {
-                G_formDisplay.TransparencyKey = Color.Empty;
+                G_formDisplay.TransparencyKey = SystemColors.MenuHighlight;
                 G_formDisplay.BackColor = customDisplayBackColor;
+                //G_formDisplay.TransparencyKey = Color.Empty;
+                // Unknown Error.
+                // Randomly get error if set to Color.Empty.
                 G_formDisplay.Opacity = Form_Main_Window.G_customDisplayBackTransValue/100.0;
             }
 
@@ -247,44 +251,44 @@ namespace Live_Netease_Music_Title
 
 
 
-/*
-        private const uint WS_EX_LAYERED = 0x80000;
-        private const int WS_EX_TRANSPARENT = 0x20;
-        private const int GWL_STYLE = (-16);
-        private const int GWL_EXSTYLE = (-20);
-        private const int LWA_ALPHA = 0;
+        /*
+                private const uint WS_EX_LAYERED = 0x80000;
+                private const int WS_EX_TRANSPARENT = 0x20;
+                private const int GWL_STYLE = (-16);
+                private const int GWL_EXSTYLE = (-20);
+                private const int LWA_ALPHA = 0;
 
-        [DllImport("user32", EntryPoint = "SetWindowLong")]
-        private static extern uint SetWindowLong(
-        IntPtr hwnd,
-        int nIndex,
-        uint dwNewLong
-        );
+                [DllImport("user32", EntryPoint = "SetWindowLong")]
+                private static extern uint SetWindowLong(
+                IntPtr hwnd,
+                int nIndex,
+                uint dwNewLong
+                );
 
-        [DllImport("user32", EntryPoint = "GetWindowLong")]
-        private static extern uint GetWindowLong(
-        IntPtr hwnd,
-        int nIndex
-        );
+                [DllImport("user32", EntryPoint = "GetWindowLong")]
+                private static extern uint GetWindowLong(
+                IntPtr hwnd,
+                int nIndex
+                );
 
-        [DllImport("user32", EntryPoint = "SetLayeredWindowAttributes")]
-        private static extern int SetLayeredWindowAttributes(
-        IntPtr hwnd,
-        int crKey,
-        int bAlpha,
-        int dwFlags
-        );
+                [DllImport("user32", EntryPoint = "SetLayeredWindowAttributes")]
+                private static extern int SetLayeredWindowAttributes(
+                IntPtr hwnd,
+                int crKey,
+                int bAlpha,
+                int dwFlags
+                );
 
-        public void SetPenetrate(bool flag = true)
-        {
-            uint style = GetWindowLong(this.Handle, GWL_EXSTYLE);
-            if (flag)
-                SetWindowLong(this.Handle, GWL_EXSTYLE, style | WS_EX_TRANSPARENT | WS_EX_LAYERED);
-            else
-                SetWindowLong(this.Handle, GWL_EXSTYLE, style & ~(WS_EX_TRANSPARENT | WS_EX_LAYERED));
-            SetLayeredWindowAttributes(this.Handle, 0, 100, LWA_ALPHA);
-        }
-*/
+                public void SetPenetrate(bool flag = true)
+                {
+                    uint style = GetWindowLong(this.Handle, GWL_EXSTYLE);
+                    if (flag)
+                        SetWindowLong(this.Handle, GWL_EXSTYLE, style | WS_EX_TRANSPARENT | WS_EX_LAYERED);
+                    else
+                        SetWindowLong(this.Handle, GWL_EXSTYLE, style & ~(WS_EX_TRANSPARENT | WS_EX_LAYERED));
+                    SetLayeredWindowAttributes(this.Handle, 0, 100, LWA_ALPHA);
+                }
+        */
 
     }
 }

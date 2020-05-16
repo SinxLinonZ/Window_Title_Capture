@@ -28,8 +28,10 @@
         /// </summary>
         private void InitializeComponent()
         {
+            this.components = new System.ComponentModel.Container();
             this.label_Display = new System.Windows.Forms.Label();
             this.backgroundWorker_Rolling = new System.ComponentModel.BackgroundWorker();
+            this.timer_Rolling = new System.Windows.Forms.Timer(this.components);
             this.SuspendLayout();
             // 
             // label_Display
@@ -76,5 +78,6 @@
 
         private System.Windows.Forms.Label label_Display;
         private System.ComponentModel.BackgroundWorker backgroundWorker_Rolling;
+        private System.Windows.Forms.Timer timer_Rolling;
     }
 }

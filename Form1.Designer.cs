@@ -170,6 +170,7 @@
             // richTextBox_Font_Preview
             // 
             this.richTextBox_Font_Preview.BackColor = System.Drawing.SystemColors.Control;
+            this.richTextBox_Font_Preview.ForeColor = System.Drawing.Color.Black;
             this.richTextBox_Font_Preview.Location = new System.Drawing.Point(9, 35);
             this.richTextBox_Font_Preview.Multiline = false;
             this.richTextBox_Font_Preview.Name = "richTextBox_Font_Preview";
@@ -406,9 +407,9 @@
             this.label_Copyright.ForeColor = System.Drawing.SystemColors.ControlDark;
             this.label_Copyright.Location = new System.Drawing.Point(12, 397);
             this.label_Copyright.Name = "label_Copyright";
-            this.label_Copyright.Size = new System.Drawing.Size(150, 13);
+            this.label_Copyright.Size = new System.Drawing.Size(134, 13);
             this.label_Copyright.TabIndex = 17;
-            this.label_Copyright.Text = "v0.1 Beta 作者：林子易 h-kys";
+            this.label_Copyright.Text = "v0.2.1 作者：林子易 h-kys";
             // 
             // Form_Main_Window
             // 
@@ -433,6 +434,7 @@
             this.MaximizeBox = false;
             this.Name = "Form_Main_Window";
             this.Text = "网易云音乐播放抓取";
+            this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Main_Window_FormClosing);
             this.Load += new System.EventHandler(this.Form_Main_Window_Load);
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Catch_Speed)).EndInit();
             this.groupBox_Font.ResumeLayout(false);

@@ -1,7 +1,6 @@
 M:\visualstudio\Live_Netease_Music_Title\bin\Debug\Live_Netease_Music_Title.exe.config
 M:\visualstudio\Live_Netease_Music_Title\bin\Debug\Live_Netease_Music_Title.exe
 M:\visualstudio\Live_Netease_Music_Title\bin\Debug\Live_Netease_Music_Title.pdb
-M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.csprojAssemblyReference.cache
 M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.Properties.Resources.resources
 M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.csproj.GenerateResource.cache
 M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.csproj.CoreCompileInputs.cache

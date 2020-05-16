@@ -8,6 +8,7 @@ using System.Linq;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
+using Live_Netease_Music_Title.Properties;
 
 namespace Live_Netease_Music_Title
 {
@@ -20,7 +21,7 @@ namespace Live_Netease_Music_Title
 
         public static bool G_customBackground = false;
         public static Color G_customDisplayBackColor;
-        public static bool G_customDisplayBackTrans;
+        //public static bool G_customDisplayBackTrans;
         public static int G_customDisplayBackTransValue = 100;
 
         public static bool G_displayModeRolling = false;
@@ -44,9 +45,111 @@ namespace Live_Netease_Music_Title
 
         private void Form_Main_Window_Load(object sender, EventArgs e)
         {
-            label_Font_Color_Preview.BackColor = richTextBox_Font_Preview.ForeColor;
 
             backgroundWorker_Open_Display_Form.RunWorkerAsync();
+
+            if (Settings.Default.Changed)
+            {
+                G_catchSpeed = Settings.Default.G_catchSpeed;
+                G_displayFont = Settings.Default.G_displayFont;
+                G_displayColor = Settings.Default.G_displayColor;
+
+                G_customBackground = Settings.Default.G_customBackground;
+                G_customDisplayBackColor = Settings.Default.G_customDisplayBackColor;
+                G_customDisplayBackTransValue = Settings.Default.G_customDisplayBackTransValue;
+
+                G_displayModeRolling = Settings.Default.G_displayModeRolling;
+                G_displayRollingSize = Settings.Default.G_displayRollingSize;
+
+                G_topMost = Settings.Default.G_topMost;
+
+                Settings.Default.Changed = true;
+
+                trackBar_Catch_Speed.Value = G_catchSpeed;
+                label_Catch_Speed_Value.Text = G_catchSpeed.ToString();
+
+                richTextBox_Font_Preview.Font = G_displayFont;
+                label_Font_Color_Preview.BackColor = 
+                    richTextBox_Font_Preview.ForeColor = 
+                    G_displayColor;
+
+                if (!G_customBackground)
+                {
+                    radioButton_Background_Full_Transparent.Checked = true;
+                    radioButton_Background_Custom.Checked = false;
+                    label_Background_Color.ForeColor =
+                        label_Background_Transparent.ForeColor =
+                        label_Background_Transparent_Value.ForeColor =
+                        SystemColors.ControlDark;
+                    richTextBox_Font_Preview.BackColor = 
+                        label_Background_Color_Preview.BackColor = 
+                        SystemColors.Control;
+                    label_Background_Transparent_Value.Text = G_customDisplayBackTransValue.ToString() + "%";
+                    trackBar_Background_Transparent.Value = G_customDisplayBackTransValue;
+                    trackBar_Background_Transparent.Enabled = false;
+                } else
+                {
+                    radioButton_Background_Full_Transparent.Checked = false;
+                    radioButton_Background_Custom.Checked = true;
+                    label_Background_Color.ForeColor =
+                        label_Background_Transparent.ForeColor =
+                        label_Background_Transparent_Value.ForeColor =
+                        SystemColors.ControlText;
+                    richTextBox_Font_Preview.BackColor = 
+                        label_Background_Color_Preview.BackColor = 
+                        G_customDisplayBackColor;
+                    label_Background_Transparent_Value.Text = G_customDisplayBackTransValue.ToString() + "%";
+                    trackBar_Background_Transparent.Value = G_customDisplayBackTransValue;
+                    trackBar_Background_Transparent.Enabled = true;
+                }
+
+                if (!G_displayModeRolling)
+                {
+                    radioButton_Display_No_Rolling.Checked = true;
+                    radioButton_Display_Rolling.Checked = false;
+                    label_Display_Window_Size.ForeColor = SystemColors.ControlDark;
+                    textBox_Display_Window_Size_Value.Enabled = false;
+                    textBox_Display_Window_Size_Value.Text = G_displayRollingSize.ToString();
+                } else
+                {
+                    radioButton_Display_No_Rolling.Checked = false;
+                    radioButton_Display_Rolling.Checked = true;
+                    label_Display_Window_Size.ForeColor = SystemColors.ControlText;
+                    textBox_Display_Window_Size_Value.Enabled = true;
+                    textBox_Display_Window_Size_Value.Text = G_displayRollingSize.ToString();
+                }
+
+                checkBox_TopMost.Checked = G_topMost;
+
+                richTextBox_Log.Text += "找到上一次配置，已载入\r\n";
+
+            } else
+            {
+                richTextBox_Log.Text += "没有找到上一次配置，初始化配置\r\n";
+            }
+
+            Form_Display.G_formDisplay.C_updateSettings();
+        }
+
+        private void Form_Main_Window_FormClosing(object sender, FormClosingEventArgs e)
+        {
+
+            Settings.Default.G_catchSpeed = G_catchSpeed;
+            Settings.Default.G_displayFont = G_displayFont;
+            Settings.Default.G_displayColor = G_displayColor;
+
+            Settings.Default.G_customBackground = G_customBackground;
+            Settings.Default.G_customDisplayBackColor = G_customDisplayBackColor;
+            Settings.Default.G_customDisplayBackTransValue = G_customDisplayBackTransValue;
+
+            Settings.Default.G_displayModeRolling = G_displayModeRolling;
+            Settings.Default.G_displayRollingSize = G_displayRollingSize;
+
+            Settings.Default.G_topMost = G_topMost;
+
+            Settings.Default.Changed = true;
+
+            Settings.Default.Save();
 
         }
 
@@ -414,5 +517,6 @@ namespace Live_Netease_Music_Title
             Form_Display.G_formDisplay.C_updateSettings();
 
         }
+
     }
 }
