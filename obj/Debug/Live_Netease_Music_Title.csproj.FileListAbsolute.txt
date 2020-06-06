@@ -9,3 +9,4 @@ M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.pdb
 M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.Form_Main_Window.resources
 M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.Form_Display.resources
 M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.csprojAssemblyReference.cache
+M:\visualstudio\Live_Netease_Music_Title\obj\Debug\Live_Netease_Music_Title.Form_About.resources
