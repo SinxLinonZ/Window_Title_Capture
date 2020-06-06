@@ -5,6 +5,7 @@ using System.Data;
 using System.Diagnostics;
 using System.Drawing;
 using System.Linq;
+using System.Runtime.InteropServices;
 using System.Text;
 using System.Threading.Tasks;
 using System.Windows.Forms;
@@ -14,8 +15,8 @@ namespace Live_Netease_Music_Title
 {
     public partial class Form_Main_Window : Form
     {
-        public static int G_catchSpeed = 2000;
-        
+        //  Define Variables for Global Use
+
         public static Font G_displayFont;
         public static Color G_displayColor;
 
@@ -30,27 +31,33 @@ namespace Live_Netease_Music_Title
         public static bool running = false;
 
         public static int G_process_ID;
+        public static IntPtr G_process_Handle;
         public static string G_last_title;
         public static string G_title;
 
         public static bool G_topMost = false;
-//        public static bool G_Penetrate = false;
+        //        public static bool G_Penetrate = false;
+
+        public static Form_Main_Window MainForm = null;
+
+        public static IntPtr hhook = new IntPtr();
+
 
         public Form_Main_Window()
         {
             InitializeComponent();
             Control.CheckForIllegalCrossThreadCalls = false;
-
+            MainForm = this;
         }
 
         private void Form_Main_Window_Load(object sender, EventArgs e)
         {
-
+            //  Open Second Form
             backgroundWorker_Open_Display_Form.RunWorkerAsync();
 
+            //  Load Save Settings if Exists
             if (Settings.Default.Changed)
             {
-                G_catchSpeed = Settings.Default.G_catchSpeed;
                 G_displayFont = Settings.Default.G_displayFont;
                 G_displayColor = Settings.Default.G_displayColor;
 
@@ -64,9 +71,6 @@ namespace Live_Netease_Music_Title
                 G_topMost = Settings.Default.G_topMost;
 
                 Settings.Default.Changed = true;
-
-                trackBar_Catch_Speed.Value = G_catchSpeed;
-                label_Catch_Speed_Value.Text = G_catchSpeed.ToString();
 
                 richTextBox_Font_Preview.Font = G_displayFont;
                 label_Font_Color_Preview.BackColor = 
@@ -123,7 +127,8 @@ namespace Live_Netease_Music_Title
 
                 richTextBox_Log.Text += "找到上一次配置，已载入\r\n";
 
-            } else
+            } 
+            else
             {
                 richTextBox_Log.Text += "没有找到上一次配置，初始化配置\r\n";
             }
@@ -131,10 +136,10 @@ namespace Live_Netease_Music_Title
             Form_Display.G_formDisplay.C_updateSettings();
         }
 
+        //  Save Settings when Closed
         private void Form_Main_Window_FormClosing(object sender, FormClosingEventArgs e)
         {
 
-            Settings.Default.G_catchSpeed = G_catchSpeed;
             Settings.Default.G_displayFont = G_displayFont;
             Settings.Default.G_displayColor = G_displayColor;
 
@@ -191,33 +196,6 @@ namespace Live_Netease_Music_Title
                 Form_Display.G_formDisplay.C_updateSettings();
             }
 
-        }
-
-        private void trackBar_Catch_Speed_Scroll(object sender, EventArgs e)
-        {
-
-            int smallChangeValue = 50;
-            int trackValue, source_trackValue;
-
-            source_trackValue = trackValue = trackBar_Catch_Speed.Value;
-
-            if (trackValue % smallChangeValue != 0)
-            {
-
-                trackValue = (trackValue / smallChangeValue) * smallChangeValue;
-
-                if (source_trackValue == trackValue + 3)
-                {
-                    trackBar_Catch_Speed.Value = trackValue + smallChangeValue;
-                } else
-                {
-                    trackBar_Catch_Speed.Value = trackValue;
-                }
-
-            }
-
-            G_catchSpeed = trackBar_Catch_Speed.Value;
-            label_Catch_Speed_Value.Text = G_catchSpeed.ToString();
         }
 
         private void radioButton_Background_Full_Transparent_CheckedChanged(object sender, EventArgs e)
@@ -335,11 +313,31 @@ namespace Live_Netease_Music_Title
             Application.Run(new Form_Display());
         }
 
+        //  Exit whole Application if Second Window has been closed
         private void backgroundWorker_Open_Display_Form_RunWorkerCompleted(object sender, RunWorkerCompletedEventArgs e)
         {
             System.Environment.Exit(0);
         }
 
+
+
+        //  Get Process ID and Handle
+        //  Import WindowsAPI function
+        [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
+        static extern int GetWindowText(IntPtr hWnd, StringBuilder lpString, int nMaxCount);
+
+        [DllImport("user32.dll", SetLastError = true, CharSet = CharSet.Auto)]
+        static extern int GetWindowTextLength(IntPtr hWnd);
+
+        public static string GetWindowTitle(IntPtr hWnd)
+        {
+            var length = GetWindowTextLength(hWnd) + 1;
+            var title = new StringBuilder(length);
+            GetWindowText(hWnd, title, length);
+            return title.ToString();
+        }
+
+        
         private int C_getProcessID()
         {
             bool get = false;
@@ -353,11 +351,13 @@ namespace Live_Netease_Music_Title
                 {
                     if (!string.IsNullOrEmpty(process.MainWindowTitle))
                     {
-                        G_last_title = G_title = process.MainWindowTitle;
                         G_process_ID = process.Id;
+                        G_process_Handle = process.MainWindowHandle;
+                        G_last_title = G_title = GetWindowTitle(G_process_Handle);
                         get = true;
                         label_Status_Value.Text = "正在循环捕获...";
                         richTextBox_Log.Text += "已找到网易云音乐主窗体。进程ID：" + G_process_ID + "\r\n";
+                        richTextBox_Log.Text += "Handle：" + G_process_Handle + "\r\n";
                         richTextBox_Log.Text += "检测到曲目切换\r\n" + G_title + "\r\n";
                         Form_Display.G_formDisplay.C_updateSettings();
                         return 0;
@@ -403,19 +403,18 @@ namespace Live_Netease_Music_Title
 
                 if (C_getProcessID() == 0)
                 {
-                    backgroundWorker_Get_Title.RunWorkerAsync();
+                    hhook = SetWinEventHook(EVENT_OBJECT_NAMECHANGE, EVENT_OBJECT_NAMECHANGE, IntPtr.Zero,
+        procDelegate, Convert.ToUInt32(G_process_ID), 0, WINEVENT_OUTOFCONTEXT);
                 }
             }
             else
             {
                 label_Status_Value.Text = "正在停止捕获，请稍等...";
                 richTextBox_Log.Text += "正在停止捕获\r\n";
-                richTextBox_Log.Text += "请等待"+ (G_catchSpeed/1000).ToString()+ "秒\r\n";
                 button_Switch.Text = "正在停止...";
                 button_Switch.Enabled = false;
 
-                backgroundWorker_Get_Title.CancelAsync();
-                System.Threading.Thread.Sleep(G_catchSpeed);
+                UnhookWinEvent(hhook);
 
                 label_Status_Value.Text = "未捕获（用户正常终止）";
                 richTextBox_Log.Text += "已停止捕获\r\n";
@@ -425,47 +424,37 @@ namespace Live_Netease_Music_Title
             }
         }
 
-        private void backgroundWorker_Get_Title_DoWork(object sender, DoWorkEventArgs e)
+
+
+        //  Event Hook
+        //  Import WindowsAPI
+        delegate void WinEventDelegate(IntPtr hWinEventHook, uint eventType,
+    IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime);
+
+        [DllImport("user32.dll")]
+        static extern IntPtr SetWinEventHook(uint eventMin, uint eventMax, IntPtr
+           hmodWinEventProc, WinEventDelegate lpfnWinEventProc, uint idProcess,
+           uint idThread, uint dwFlags);
+
+        [DllImport("user32.dll")]
+        static extern bool UnhookWinEvent(IntPtr hWinEventHook);
+
+        //const uint EVENT_SYSTEM_FOREGROUND = 3;
+        const uint EVENT_OBJECT_NAMECHANGE = 0x800C;
+        const uint WINEVENT_OUTOFCONTEXT = 0;
+
+        static WinEventDelegate procDelegate = new WinEventDelegate(WinEventProc);
+
+        static void WinEventProc(IntPtr hWinEventHook, uint eventType,
+            IntPtr hwnd, int idObject, int idChild, uint dwEventThread, uint dwmsEventTime)
         {
-            while (true)
+            G_title = GetWindowTitle(G_process_Handle);
+            if (G_title != G_last_title)
             {
-
-                if (backgroundWorker_Get_Title.CancellationPending)
-                {
-                    break;
-                }
-
-                try
-                {
-                    var process = Process.GetProcessById(G_process_ID);
-                    G_title = process.MainWindowTitle;
-
-                    if (G_title == G_last_title)
-                    {
-                        System.Threading.Thread.Sleep(G_catchSpeed);
-                        continue;
-                    }
-                    else
-                    {
-                        G_last_title = G_title;
-                        Form_Display.G_formDisplay.C_updateSettings();
-                        richTextBox_Log.Text += "检测到曲目切换\r\n" + G_title + "\r\n";
-                    }
-
-                    System.Threading.Thread.Sleep(G_catchSpeed);
-
-                }
-                catch (Exception exited_e)
-                {
-                    label_Status_Value.Text = "未捕获（异常终止）";
-                    richTextBox_Log.Text += "错误：网易云音乐进程可能被关闭，已停止捕获\r\n";
-                    richTextBox_Log.Text += exited_e.Message + "\r\n";
-                    button_Switch.Text = "开始捕获";
-                    running = false;
-                    break;
-                }
+                G_last_title = G_title;
+                Form_Display.G_formDisplay.C_updateSettings();
+                MainForm.richTextBox_Log.Text += "检测到曲目切换\r\n" + G_title + "\r\n";
             }
-
         }
 
         private void richTextBox_Log_TextChanged(object sender, EventArgs e)
@@ -518,5 +507,28 @@ namespace Live_Netease_Music_Title
 
         }
 
+        private void timer_ExitCheck_Tick(object sender, EventArgs e)
+        {
+            if (running)
+            {
+                try
+                {
+                    var process = Process.GetProcessById(G_process_ID);
+                }
+                catch (Exception exited_e)
+                {
+                    MainForm.label_Status_Value.Text = "未捕获（异常终止）";
+                    MainForm.richTextBox_Log.Text += "错误：网易云音乐进程可能被关闭，已停止捕获\r\n";
+                    MainForm.richTextBox_Log.Text += exited_e.Message + "\r\n";
+                    MainForm.button_Switch.Text = "开始捕获";
+                    running = false;
+                }
+            }
+            else
+            {
+                G_title = "";
+                Form_Display.G_formDisplay.C_updateSettings();
+            }
+        }
     }
 }

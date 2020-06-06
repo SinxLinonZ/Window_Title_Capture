@@ -28,11 +28,9 @@
         /// </summary>
         private void InitializeComponent()
         {
-            this.trackBar_Catch_Speed = new System.Windows.Forms.TrackBar();
+            this.components = new System.ComponentModel.Container();
             this.fontDialog_Display_Font = new System.Windows.Forms.FontDialog();
             this.label_Font = new System.Windows.Forms.Label();
-            this.label_Catch_Speed = new System.Windows.Forms.Label();
-            this.label_Catch_Speed_Value = new System.Windows.Forms.Label();
             this.label_line_v = new System.Windows.Forms.Label();
             this.button_Change_Font = new System.Windows.Forms.Button();
             this.groupBox_Font = new System.Windows.Forms.GroupBox();
@@ -60,29 +58,14 @@
             this.colorDialog_Display_Font = new System.Windows.Forms.ColorDialog();
             this.colorDialog_Background = new System.Windows.Forms.ColorDialog();
             this.backgroundWorker_Open_Display_Form = new System.ComponentModel.BackgroundWorker();
-            this.backgroundWorker_Get_Title = new System.ComponentModel.BackgroundWorker();
             this.checkBox_TopMost = new System.Windows.Forms.CheckBox();
             this.label_Copyright = new System.Windows.Forms.Label();
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar_Catch_Speed)).BeginInit();
+            this.timer_ExitCheck = new System.Windows.Forms.Timer(this.components);
             this.groupBox_Font.SuspendLayout();
             this.groupBox_Display.SuspendLayout();
             ((System.ComponentModel.ISupportInitialize)(this.trackBar_Background_Transparent)).BeginInit();
             this.groupBox_Background.SuspendLayout();
             this.SuspendLayout();
-            // 
-            // trackBar_Catch_Speed
-            // 
-            this.trackBar_Catch_Speed.LargeChange = 1000;
-            this.trackBar_Catch_Speed.Location = new System.Drawing.Point(12, 25);
-            this.trackBar_Catch_Speed.Maximum = 100000;
-            this.trackBar_Catch_Speed.Minimum = 100;
-            this.trackBar_Catch_Speed.Name = "trackBar_Catch_Speed";
-            this.trackBar_Catch_Speed.Size = new System.Drawing.Size(368, 45);
-            this.trackBar_Catch_Speed.SmallChange = 500;
-            this.trackBar_Catch_Speed.TabIndex = 0;
-            this.trackBar_Catch_Speed.TickFrequency = 5000;
-            this.trackBar_Catch_Speed.Value = 2000;
-            this.trackBar_Catch_Speed.Scroll += new System.EventHandler(this.trackBar_Catch_Speed_Scroll);
             // 
             // fontDialog_Display_Font
             // 
@@ -97,24 +80,6 @@
             this.label_Font.Size = new System.Drawing.Size(31, 13);
             this.label_Font.TabIndex = 1;
             this.label_Font.Text = "预览";
-            // 
-            // label_Catch_Speed
-            // 
-            this.label_Catch_Speed.AutoSize = true;
-            this.label_Catch_Speed.Location = new System.Drawing.Point(12, 9);
-            this.label_Catch_Speed.Name = "label_Catch_Speed";
-            this.label_Catch_Speed.Size = new System.Drawing.Size(85, 13);
-            this.label_Catch_Speed.TabIndex = 2;
-            this.label_Catch_Speed.Text = "捕获时间间隔：";
-            // 
-            // label_Catch_Speed_Value
-            // 
-            this.label_Catch_Speed_Value.AutoSize = true;
-            this.label_Catch_Speed_Value.Location = new System.Drawing.Point(103, 9);
-            this.label_Catch_Speed_Value.Name = "label_Catch_Speed_Value";
-            this.label_Catch_Speed_Value.Size = new System.Drawing.Size(31, 13);
-            this.label_Catch_Speed_Value.TabIndex = 3;
-            this.label_Catch_Speed_Value.Text = "2000";
             // 
             // label_line_v
             // 
@@ -385,11 +350,6 @@
             this.backgroundWorker_Open_Display_Form.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_Open_Display_Form_DoWork);
             this.backgroundWorker_Open_Display_Form.RunWorkerCompleted += new System.ComponentModel.RunWorkerCompletedEventHandler(this.backgroundWorker_Open_Display_Form_RunWorkerCompleted);
             // 
-            // backgroundWorker_Get_Title
-            // 
-            this.backgroundWorker_Get_Title.WorkerSupportsCancellation = true;
-            this.backgroundWorker_Get_Title.DoWork += new System.ComponentModel.DoWorkEventHandler(this.backgroundWorker_Get_Title_DoWork);
-            // 
             // checkBox_TopMost
             // 
             this.checkBox_TopMost.AutoSize = true;
@@ -407,9 +367,15 @@
             this.label_Copyright.ForeColor = System.Drawing.SystemColors.ControlDark;
             this.label_Copyright.Location = new System.Drawing.Point(12, 397);
             this.label_Copyright.Name = "label_Copyright";
-            this.label_Copyright.Size = new System.Drawing.Size(134, 13);
+            this.label_Copyright.Size = new System.Drawing.Size(150, 13);
             this.label_Copyright.TabIndex = 17;
-            this.label_Copyright.Text = "v0.2.1 作者：林子易 h-kys";
+            this.label_Copyright.Text = "v0.4 Beta 作者：林子易 h-kys";
+            // 
+            // timer_ExitCheck
+            // 
+            this.timer_ExitCheck.Enabled = true;
+            this.timer_ExitCheck.Interval = 1000;
+            this.timer_ExitCheck.Tick += new System.EventHandler(this.timer_ExitCheck_Tick);
             // 
             // Form_Main_Window
             // 
@@ -427,16 +393,12 @@
             this.Controls.Add(this.groupBox_Background);
             this.Controls.Add(this.groupBox_Font);
             this.Controls.Add(this.label_line_v);
-            this.Controls.Add(this.label_Catch_Speed_Value);
-            this.Controls.Add(this.label_Catch_Speed);
-            this.Controls.Add(this.trackBar_Catch_Speed);
             this.FormBorderStyle = System.Windows.Forms.FormBorderStyle.Fixed3D;
             this.MaximizeBox = false;
             this.Name = "Form_Main_Window";
             this.Text = "网易云音乐播放抓取";
             this.FormClosing += new System.Windows.Forms.FormClosingEventHandler(this.Form_Main_Window_FormClosing);
             this.Load += new System.EventHandler(this.Form_Main_Window_Load);
-            ((System.ComponentModel.ISupportInitialize)(this.trackBar_Catch_Speed)).EndInit();
             this.groupBox_Font.ResumeLayout(false);
             this.groupBox_Font.PerformLayout();
             this.groupBox_Display.ResumeLayout(false);
@@ -450,12 +412,8 @@
         }
 
         #endregion
-
-        private System.Windows.Forms.TrackBar trackBar_Catch_Speed;
         private System.Windows.Forms.FontDialog fontDialog_Display_Font;
         private System.Windows.Forms.Label label_Font;
-        private System.Windows.Forms.Label label_Catch_Speed;
-        private System.Windows.Forms.Label label_Catch_Speed_Value;
         private System.Windows.Forms.Label label_line_v;
         private System.Windows.Forms.Button button_Change_Font;
         private System.Windows.Forms.GroupBox groupBox_Font;
@@ -483,9 +441,9 @@
         private System.Windows.Forms.Label label_Font_Color_Preview;
         private System.Windows.Forms.Label label_Font_Color;
         private System.ComponentModel.BackgroundWorker backgroundWorker_Open_Display_Form;
-        private System.ComponentModel.BackgroundWorker backgroundWorker_Get_Title;
         private System.Windows.Forms.CheckBox checkBox_TopMost;
         private System.Windows.Forms.Label label_Copyright;
+        private System.Windows.Forms.Timer timer_ExitCheck;
     }
 }
 
